@@ -1,3 +1,21 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ * 
+ */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -8,13 +26,21 @@
 
 #define SCALE 0.0060
 #define PS_UNITS 72
+#define WHITE 1.00
+#define GREY 0.50
+#define GRAY 0.50
+#define BLACK 0.00
+#define CLEAR 1.00
+#define DARK 0.00
+#define OVER_SIZE true
+#define ORIG_SIZE false
 
 typedef struct PSInfo {
 	void *primlist;
 	int dg_size;
 	int clearance;
+	int brd_x1, brd_y1, brd_x2, brd_y2;
 }psInfo_t;
-
 
 bool PS2File_header ( FILE *f_dest );
 bool PS2File_creator ( FILE *f_dest);
@@ -34,24 +60,20 @@ bool PS2File_linecap ( FILE *f_dest, int cap );
 bool PS2File_begin_brd_proc ( FILE *f_dest, char *board_str );
 bool PS2File_end_brd_proc ( FILE *f_dest );
 
+bool PS2File_back_ground ( struct PSInfo *psinfo, FILE *f_dest, int border, float fill); 
 
-bool PS2File_arc_dark ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
-bool PS2File_arc_clear ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
+bool PS2File_arc ( struct PSInfo *ptr, FILE *f_dest, bool extra_width, float fill );
 
-bool PS2File_fil_dark ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
-bool PS2File_fil_clear ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
+bool PS2File_fil ( struct PSInfo *ptr, FILE *f_dest, bool extra_width, float fill );
 
-bool PS2File_pad_dark ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
-bool PS2File_pad_clear ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
+bool PS2File_pad ( struct PSInfo *ptr, FILE *f_dest, bool extra_width, float fill );
 
-bool PS2File_str_dark ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
-bool PS2File_str_clear ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
+bool PS2File_str ( struct PSInfo *ptr, FILE *f_dest, bool extra_width, float fill );
 
-bool PS2File_trk_dark ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
-bool PS2File_trk_clear ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
+bool PS2File_trk ( struct PSInfo *ptr, FILE *f_dest, bool extra_width, float fill );
 
-bool PS2File_via_dark ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
-bool PS2File_via_clear ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
+bool PS2File_via ( struct PSInfo *ptr, FILE *f_dest, bool extra_width, float fill );
 
-bool PS2File_dgd ( struct PSInfo *ptr, FILE *f_dest, bool extra_width );
+bool PS2File_dgd ( struct PSInfo *ptr, FILE *f_dest, bool extra_width, float fill );
+
 

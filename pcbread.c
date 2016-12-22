@@ -1,3 +1,21 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ * 
+ */
+
 /**
   * pcbread - read protel autotrax *.pcb
   *
@@ -221,6 +239,11 @@ int main(int argc, char **argv) {
 	psinfo.primlist = &tracks;
 	psinfo.dg_size = 20;
 	psinfo.clearance = 20;
+	psinfo.brd_x1 = board_info.min_x;
+	psinfo.brd_y1 = board_info.min_y;
+	psinfo.brd_x2 = board_info.max_x;
+	psinfo.brd_y2 = board_info.max_y;
+	
 
 	PS2File_header ( f_psfile );
 	PS2File_creator ( f_psfile );
@@ -231,16 +254,20 @@ int main(int argc, char **argv) {
 	PS2File_scale ( f_psfile, 1, 1);
 	PS2File_linecap ( f_psfile ,1);
 
-	psinfo.primlist = &tracks;
-	PS2File_trk_dark ( &psinfo, f_psfile, true);
-	psinfo.primlist = &pads;
-	PS2File_pad_dark ( &psinfo, f_psfile, true);
+	PS2File_back_ground( &psinfo, f_psfile, 100, CLEAR);
 
 	psinfo.primlist = &tracks;
-	PS2File_trk_clear ( &psinfo, f_psfile, false);
+	PS2File_trk ( &psinfo, f_psfile, OVER_SIZE, DARK);
 	psinfo.primlist = &pads;
-	PS2File_pad_clear ( &psinfo, f_psfile, false);
-	PS2File_dgd ( &psinfo, f_psfile, false);
+	PS2File_pad ( &psinfo, f_psfile, OVER_SIZE, DARK);
+
+	psinfo.primlist = &tracks;
+	PS2File_trk ( &psinfo, f_psfile, ORIG_SIZE, CLEAR);
+	psinfo.primlist = &pads;
+	PS2File_pad ( &psinfo, f_psfile, ORIG_SIZE, CLEAR);
+	PS2File_dgd ( &psinfo, f_psfile, ORIG_SIZE, DARK);
+	
+	PS2File_showpage( f_psfile);
 		
 	KeyArray_free( &apt_keys);
 	PadArray_free( &pads);
@@ -249,7 +276,7 @@ int main(int argc, char **argv) {
 	fclose(f_source);
 	fclose(f_destination);
 	fclose(f_sanitised);
-	
+	fclose(f_psfile);
 
 	return 0;
 }
@@ -477,7 +504,7 @@ int PCB_validate_src (FILE * f_src)
  * Componets (comps)
  * 
  * 04-12-2016
- * need code to find x_mix, y_min, x_max, y_max 
+ * need code to find x_mix, y_min, x_max, y_max: done 12/12/2016
  */
 int PCB_collect_board_information (FILE *f_src, struct PCB_brd_info *src, struct KeyArray_array *apt_keys ) {
 	
